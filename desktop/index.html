@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeldMusic</title>
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Frameless Drifting Background Blobs -->
+  <div class="background-container">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Custom Window Title Bar -->
+    <header class="titlebar">
+      <div class="titlebar-drag-region">
+        <img src="icon.png" class="titlebar-logo" alt="MeldMusic Logo">
+        <span class="titlebar-title">MeldMusic</span>
+      </div>
+      <div class="window-controls">
+        <button id="btn-minimize" class="control-btn"><span class="material-icons-round">remove</span></button>
+        <button id="btn-maximize" class="control-btn"><span class="material-icons-round">crop_square</span></button>
+        <button id="btn-close" class="control-btn close-btn"><span class="material-icons-round">close</span></button>
+      </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Left Glassmorphic Sidebar -->
+      <aside class="sidebar">
+        <div class="nav-section">
+          <button class="nav-item active" data-target="tab-player">
+            <span class="material-icons-round">music_note</span>
+            Player Hub
+          </button>
+          <button class="nav-item" data-target="tab-search">
+            <span class="material-icons-round">search</span>
+            Search
+          </button>
+          <button class="nav-item" data-target="tab-liked">
+            <span class="material-icons-round">favorite</span>
+            Liked Songs
+          </button>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- Custom Playlists Navigation -->
+        <div class="playlist-section">
+          <h3>MY PLAYLISTS</h3>
+          <div class="create-playlist-btn" id="btn-create-playlist-sidebar">
+            <span class="material-icons-round">add</span>
+            Create Playlist
+          </div>
+          <div id="sidebar-playlists-list" class="sidebar-playlists">
+            <!-- Dynamic Custom Playlists -->
+          </div>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+          <button class="settings-btn" id="btn-open-settings">
+            <span class="material-icons-round">settings</span>
+            Settings
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Contents -->
+      <main class="content-area">
+        
+        <!-- Tab: Player Hub -->
+        <section id="tab-player" class="tab-content active">
+          <div class="content-header">
+            <h1>MeldMusic</h1>
+            <p>Premium Glassmorphic Audio Player</p>
+          </div>
+
+          <!-- Featured Section -->
+          <div class="section-title">Curated Playlists</div>
+          <div class="playlists-grid" id="curated-playlists">
+            <!-- Curated Playlists Rendered Dynamically -->
+          </div>
+
+          <div class="section-title margin-top">Recently Played</div>
+          <div class="recent-songs-list" id="recently-played-list">
+            <!-- Recently Played Songs -->
+          </div>
+        </section>
+
+        <!-- Tab: Search -->
+        <section id="tab-search" class="tab-content">
+          <div class="search-bar-container">
+            <div class="search-input-wrapper">
+              <span class="material-icons-round search-icon">search</span>
+              <input type="text" id="search-input" placeholder="Search artists, songs, albums..." autocomplete="off">
+              <button id="btn-voice-search" class="voice-search-btn" title="Voice Search"><span class="material-icons-round">mic</span></button>
+            </div>
+          </div>
+
+          <!-- Search History Tags -->
+          <div class="search-history-container" id="search-history-box" style="display: none;">
+            <div class="history-header">
+              <span>Recent Searches</span>
+              <button id="btn-clear-history">Clear All</button>
+            </div>
+            <div class="history-tags" id="search-history-tags">
+              <!-- History Tags Dynamic -->
+            </div>
+          </div>
+
+          <!-- Search Results -->
+          <div class="search-results-section" id="search-results-section" style="display: none;">
+            <div class="section-title">Search Results</div>
+            <div class="results-table" id="search-results-list">
+              <!-- Search Results Songs -->
+            </div>
+          </div>
+
+          <!-- Default Search Screen Suggestion -->
+          <div class="search-suggestions" id="search-suggestions-box">
+            <div class="suggestion-card">
+              <span class="material-icons-round">music_note</span>
+              <h3>Find Your Favorite Tracks</h3>
+              <p>Type in the search bar above to look up millions of songs, lofi tracks, and synthwave remixes instantly.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab: Liked Songs -->
+        <section id="tab-liked" class="tab-content">
+          <div class="content-header">
+            <h1>Liked Songs</h1>
+            <p>All your favorite tracks in one place</p>
+          </div>
+
+          <div class="liked-songs-container" id="liked-songs-box">
+            <!-- Liked Songs Table -->
+            <div class="results-table" id="liked-songs-list">
+              <!-- Dynamic Liked Songs -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Dynamic Playlist Detail Overlay (Sub-Page) -->
+        <section id="playlist-detail" class="tab-content">
+          <div class="playlist-detail-header">
+            <button class="back-btn" id="btn-back-playlist-detail">
+              <span class="material-icons-round">arrow_back</span>
+              Back
+            </button>
+            <div class="playlist-info">
+              <img id="detail-playlist-art" src="" alt="Playlist Cover">
+              <div class="playlist-metadata">
+                <h1 id="detail-playlist-title">Playlist Title</h1>
+                <p id="detail-playlist-desc">Playlist description text goes here.</p>
+                <div class="playlist-actions">
+                  <button class="play-action-btn" id="btn-play-playlist">
+                    <span class="material-icons-round">play_arrow</span> Play
+                  </button>
+                  <button class="play-action-btn shuffle-action-btn" id="btn-shuffle-playlist">
+                    <span class="material-icons-round">shuffle</span> Shuffle
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="playlist-songs-list results-table" id="detail-playlist-songs">
+            <!-- Playlist Songs -->
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+
+    <!-- Bottom Player Control Bar -->
+    <footer class="bottom-player-bar">
+      <!-- Song Details Info -->
+      <div class="player-left" id="current-song-info">
+        <div class="track-artwork-wrapper">
+          <img id="player-track-art" src="icon.png" alt="Track Art">
+        </div>
+        <div class="track-info">
+          <div class="track-name" id="player-track-name">Not Playing</div>
+          <div class="track-artist" id="player-track-artist">MeldMusic Player</div>
+        </div>
+        <button class="player-like-btn" id="btn-player-like">
+          <span class="material-icons-round">favorite_border</span>
+        </button>
+      </div>
+
+      <!-- Main Playback Controls -->
+      <div class="player-center">
+        <div class="playback-controls">
+          <button id="btn-shuffle" class="player-icon-btn" title="Shuffle"><span class="material-icons-round">shuffle</span></button>
+          <button id="btn-prev" class="player-icon-btn" title="Previous"><span class="material-icons-round">skip_previous</span></button>
+          <button id="btn-play-pause" class="player-play-btn" title="Play"><span class="material-icons-round">play_arrow</span></button>
+          <button id="btn-next" class="player-icon-btn" title="Next"><span class="material-icons-round">skip_next</span></button>
+          <button id="btn-repeat" class="player-icon-btn" title="Repeat"><span class="material-icons-round">repeat</span></button>
+        </div>
+
+        <div class="progress-container">
+          <span class="time-label" id="current-time">0:00</span>
+          <div class="progress-bar-wrapper" id="progress-bar-hitbox">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="player-progress-fill"></div>
+            </div>
+          </div>
+          <span class="time-label" id="total-duration">0:00</span>
+        </div>
+      </div>
+
+      <!-- Volume, Speed & Audio Visualizer Expand Button -->
+      <div class="player-right">
+        <!-- Speed Control -->
+        <div class="speed-control">
+          <span class="material-icons-round speed-icon">speed</span>
+          <select id="playback-speed-select">
+            <option value="0.5">0.5x</option>
+            <option value="0.75">0.75x</option>
+            <option value="1.0" selected>1.0x</option>
+            <option value="1.25">1.25x</option>
+            <option value="1.5">1.5x</option>
+            <option value="2.0">2.0x</option>
+          </select>
+        </div>
+
+        <!-- Volume Bar -->
+        <div class="volume-container">
+          <button id="btn-mute" class="player-icon-btn"><span class="material-icons-round" id="volume-icon">volume_up</span></button>
+          <div class="volume-slider-wrapper" id="volume-slider-hitbox">
+            <div class="volume-slider-bg">
+              <div class="volume-slider-fill" id="player-volume-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visualizer Toggle -->
+        <button id="btn-expand-visualizer" class="player-icon-btn" title="Expand Full Screen Visualizer">
+          <span class="material-icons-round">picture_in_picture_alt</span>
+        </button>
+      </div>
+    </footer>
+
+    <!-- Full Screen Player Visualizer Panel -->
+    <div id="full-screen-visualizer" class="visualizer-overlay">
+      <header class="visualizer-header">
+        <button id="btn-close-visualizer" class="visualizer-close-btn">
+          <span class="material-icons-round">keyboard_arrow_down</span>
+        </button>
+        <span class="visualizer-header-title">Now Playing</span>
+      </header>
+      
+      <div class="visualizer-content">
+        <div class="visualizer-left">
+          <div class="art-card-container">
+            <img id="vis-track-art" src="icon.png" alt="Big Track Art">
+          </div>
+        </div>
+        <div class="visualizer-right">
+          <div class="vis-track-details">
+            <h1 id="vis-track-name">Not Playing</h1>
+            <h2 id="vis-track-artist">MeldMusic Player</h2>
+            <p id="vis-track-album">Single</p>
+          </div>
+
+          <!-- Dynamic Audio Wave Visualizer Simulation -->
+          <div class="vis-wave-container">
+            <div class="bar bar-1"></div>
+            <div class="bar bar-2"></div>
+            <div class="bar bar-3"></div>
+            <div class="bar bar-4"></div>
+            <div class="bar bar-5"></div>
+            <div class="bar bar-6"></div>
+            <div class="bar bar-7"></div>
+            <div class="bar bar-8"></div>
+            <div class="bar bar-9"></div>
+            <div class="bar bar-10"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden YouTube Player WebView IFrame Wrapper -->
+    <div id="youtube-player-wrapper" style="position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px;">
+      <div id="yt-iframe-placeholder"></div>
+    </div>
+
+    <!-- Settings Dialog -->
+    <div id="settings-dialog" class="dialog-overlay" style="display: none;">
+      <div class="dialog-card">
+        <div class="dialog-header">
+          <h2>Settings</h2>
+          <button class="dialog-close" id="btn-close-settings"><span class="material-icons-round">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <div class="settings-group">
+            <label for="settings-theme">Select Theme Mode</label>
+            <select id="settings-theme">
+              <option value="dark" selected>Sleek Xperia Dark</option>
+              <option value="light">Crisp Xperia Light</option>
+            </select>
+          </div>
+          <div class="settings-group">
+            <label for="settings-offline">Offline Playback Catalog Mode</label>
+            <div class="toggle-wrapper">
+              <input type="checkbox" id="settings-offline-toggle">
+              <span class="toggle-desc">Enable offline music (Search local library only)</span>
+            </div>
+          </div>
+          <div class="settings-group">
+            <label for="settings-api-key">YouTube API Key (Optional Override)</label>
+            <input type="text" id="settings-api-key" placeholder="Enter custom YouTube search API key..." autocomplete="off">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Playlist Dialog -->
+    <div id="create-playlist-dialog" class="dialog-overlay" style="display: none;">
+      <div class="dialog-card">
+        <div class="dialog-header">
+          <h2>Create Custom Playlist</h2>
+          <button class="dialog-close" id="btn-close-create-playlist"><span class="material-icons-round">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <div class="settings-group">
+            <label for="playlist-name-input">Playlist Name</label>
+            <input type="text" id="playlist-name-input" placeholder="e.g. My Study Beats..." autocomplete="off">
+          </div>
+          <div class="settings-group">
+            <label for="playlist-desc-input">Description</label>
+            <input type="text" id="playlist-desc-input" placeholder="Description of the playlist (optional)..." autocomplete="off">
+          </div>
+          <button class="submit-dialog-btn" id="btn-submit-create-playlist">Create Playlist</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Include Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>

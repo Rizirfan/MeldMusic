@@ -1,0 +1,13 @@
+{
+  "name": "meldmusic-desktop",
+  "version": "1.0.0",
+  "description": "Premium Glassmorphic Music Player",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^33.0.2"
+  }
+}

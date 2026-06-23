@@ -1,6 +1,7 @@
 # MeldMusic
 
 [![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg)](https://developer.android.com)
+[![Platform](https://img.shields.io/badge/Platform-Desktop-blue.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 [Download APK](https://github.com/Rizirfan/MeldMusic/blob/main/app-debug.apk?raw=true) or [Direct Download](https://raw.githubusercontent.com/Rizirfan/MeldMusic/main/app-debug.apk)
@@ -36,21 +37,20 @@ MeldMusic is a premium, minimalist Android music streaming player built using Je
 ## Project Structure
 
 ```
-walkmansh_app/
-├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/example/walkmansh/
-│   │   │   │   ├── data/                 # Data model (Song, Playlist) & Catalog Providers
-│   │   │   │   ├── playback/             # Media player playback manager and state machine
-│   │   │   │   ├── theme/                # Xperia colors, typography and theme wrapper
-│   │   │   │   ├── ui/
-│   │   │   │   │   ├── components/       # AppleMusicUi layout & PremiumDynamicBackground
-│   │   │   │   │   ├── main/             # WalkmanShViewModel (persistence and search flow)
-│   │   │   │   │   └── player/           # CompactPlayerCard and FullPlayerScreen
-│   │   │   │   └── MainActivity.kt       # Launcher Activity and YouTube companion component
-│   │   │   └── res/                      # Drawables (including app_logo), layout resources, etc.
-│   │   └── build.gradle.kts              # Application build config
+MeldMusic/
+├── app/                  # Android Mobile Module
+│   ├── src/main/
+│   │   ├── java/com/example/walkmansh/
+│   │   │   ├── data/     # Song model & Catalog Provider
+│   │   │   ├── playback/ # Playback Manager
+│   │   │   └── ui/       # Compose layouts (AppleMusicUi, PremiumDynamicBackground)
+│   │   └── res/          # Drawables (app_logo) & styles
+├── desktop/              # Electron Desktop Module
+│   ├── index.html        # App layout and structure
+│   ├── style.css         # Glassmorphic themes & background drift animations
+│   ├── app.js            # Playback controller, search, storage persistence
+│   ├── main.js           # Electron main process (frameless window config)
+│   └── package.json      # Node packaging & dependencies
 └── settings.gradle.kts
 ```
 
@@ -58,17 +58,8 @@ walkmansh_app/
 
 ## Setup & Installation
 
-### Prerequisites
-* Android Studio Koala+ or latest build tools.
-* Android SDK 34 (Target SDK).
-* Physical device or Emulator running Android API 21+ (Drifting blur optimizations require API 31+).
-
-### Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Rizirfan/MeldMusic.git
-   cd MeldMusic
-   ```
+### Android Mobile App
+1. Prerequisites: Android SDK 34 (Target SDK), physical device or emulator running API 21+.
 2. Build the project using Gradle:
    ```bash
    ./gradlew assembleDebug
@@ -76,6 +67,21 @@ walkmansh_app/
 3. Deploy to your connected device:
    ```bash
    adb install app/build/outputs/apk/debug/app-debug.apk
+   ```
+
+### Desktop Application (Windows, macOS, Linux)
+1. Prerequisites: Node.js (v18+) and npm installed.
+2. Navigate to the `desktop` directory:
+   ```bash
+   cd desktop
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Run the desktop application:
+   ```bash
+   npm start
    ```
 
 ---
