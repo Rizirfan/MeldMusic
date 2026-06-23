@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 // Request single instance lock to prevent cache collisions and database lock errors
@@ -32,6 +32,29 @@ if (!gotTheLock) {
       mainWindow = null;
     });
   }
+
+  // Window IPC Controls
+  ipcMain.on('window-minimize', () => {
+    if (mainWindow) {
+      mainWindow.minimize();
+    }
+  });
+
+  ipcMain.on('window-maximize', () => {
+    if (mainWindow) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      } else {
+        mainWindow.maximize();
+      }
+    }
+  });
+
+  ipcMain.on('window-close', () => {
+    if (mainWindow) {
+      mainWindow.close();
+    }
+  });
 
   app.on('second-instance', () => {
     // Someone tried to run a second instance, focus the existing window.
