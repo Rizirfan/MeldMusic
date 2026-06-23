@@ -88,6 +88,11 @@ fun PremiumDynamicBackground(
     val blobColor2 = if (isDark) Color(0xFF134C4E) else Color(0xFFDDF9F8) // Soft premium teal
     val blobColor3 = if (isDark) Color(0xFF5E1B46) else Color(0xFFFDE4E6) // Soft premium pink
 
+    // Cache color list allocations to prevent garbage collection overhead during drawing
+    val colors1 = remember(blobColor1) { listOf(blobColor1, Color.Transparent) }
+    val colors2 = remember(blobColor2) { listOf(blobColor2, Color.Transparent) }
+    val colors3 = remember(blobColor3) { listOf(blobColor3, Color.Transparent) }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -111,7 +116,7 @@ fun PremiumDynamicBackground(
             // Render Blob 1
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(blobColor1, Color.Transparent),
+                    colors = colors1,
                     center = Offset(blob1X * w, blob1Y * h),
                     radius = w * 0.8f
                 ),
@@ -122,7 +127,7 @@ fun PremiumDynamicBackground(
             // Render Blob 2
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(blobColor2, Color.Transparent),
+                    colors = colors2,
                     center = Offset(blob2X * w, blob2Y * h),
                     radius = w * 0.7f
                 ),
@@ -133,7 +138,7 @@ fun PremiumDynamicBackground(
             // Render Blob 3
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(blobColor3, Color.Transparent),
+                    colors = colors3,
                     center = Offset(blob3X * w, blob3Y * h),
                     radius = w * 0.75f
                 ),
