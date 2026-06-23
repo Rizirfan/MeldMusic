@@ -99,7 +99,7 @@ fun PremiumDynamicBackground(
                 .graphicsLayer(alpha = 0.85f)
                 .then(
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        Modifier.blur(100.dp)
+                        Modifier.blur(60.dp)
                     } else {
                         Modifier
                     }
