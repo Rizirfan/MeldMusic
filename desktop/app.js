@@ -89,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupPlayerUI();
   setupSearch();
   setupDialogs();
-  loadYoutubeIframeAPI();
 });
 
 // 4. Frameless Electron Window Operations
@@ -358,12 +357,6 @@ function removeSongFromPlaylist(playlistId, songId) {
 }
 
 // 9. YouTube IFrame API audio-only player integration
-function loadYoutubeIframeAPI() {
-  const tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  const firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-}
 
 // Executed by YouTube script loader
 window.onYouTubeIframeAPIReady = () => {

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, session } = require('electron');
 const path = require('path');
 
 // Request single instance lock to prevent cache collisions and database lock errors
@@ -65,6 +65,16 @@ if (!gotTheLock) {
   });
 
   app.whenReady().then(() => {
+    // Intercept outbound YouTube requests and spoof Origin/Referer to bypass embed restrictions under file://
+    session.defaultSession.webRequest.onBeforeSendHeaders(
+      { urls: ['*://*.youtube.com/*', '*://*.youtube-nocookie.com/*'] },
+      (details, callback) => {
+        details.requestHeaders['Referer'] = 'https://www.youtube.com';
+        details.requestHeaders['Origin'] = 'https://www.youtube.com';
+        callback({ cancel: false, requestHeaders: details.requestHeaders });
+      }
+    );
+
     createWindow();
 
     app.on('activate', () => {

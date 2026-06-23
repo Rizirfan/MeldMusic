@@ -354,5 +354,23 @@
 
   <!-- Include Scripts -->
   <script src="app.js"></script>
+
+  <!-- Temporarily hide Node.js globals so YouTube Player API doesn't load in CommonJS mode -->
+  <script>
+    if (typeof module === 'object') {
+      window.nodeModule = module;
+      module = undefined;
+    }
+  </script>
+
+  <!-- Load YouTube Player API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <!-- Restore Node.js globals -->
+  <script>
+    if (window.nodeModule) {
+      module = window.nodeModule;
+    }
+  </script>
 </body>
 </html>
