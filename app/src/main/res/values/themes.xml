@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Walkmansh" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Walkmansh" parent="Theme.Walkmansh.Splash">
+        <item name="android:statusBarColor">#FF121212</item>
+        <item name="android:navigationBarColor">#FF121212</item>
+    </style>
+
+    <style name="Theme.Walkmansh.Splash" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
 </resources>

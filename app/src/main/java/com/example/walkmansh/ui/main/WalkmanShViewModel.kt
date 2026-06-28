@@ -73,6 +73,12 @@ class WalkmanShViewModel(private val repository: DataRepository) : ViewModel() {
     private val _themeMode = MutableStateFlow(repository.getThemeMode())
     val themeMode: StateFlow<Int> = _themeMode.asStateFlow()
 
+    private val _songQuality = MutableStateFlow(repository.getSongQuality())
+    val songQuality: StateFlow<Int> = _songQuality.asStateFlow()
+
+    private val _fadeInOut = MutableStateFlow(repository.isFadeInOutEnabled())
+    val fadeInOut: StateFlow<Boolean> = _fadeInOut.asStateFlow()
+
     init {
         refreshLibraryLists()
 
@@ -237,6 +243,16 @@ class WalkmanShViewModel(private val repository: DataRepository) : ViewModel() {
     fun setThemeMode(mode: Int) {
         repository.setThemeMode(mode)
         _themeMode.value = mode
+    }
+
+    fun setSongQuality(quality: Int) {
+        repository.setSongQuality(quality)
+        _songQuality.value = quality
+    }
+
+    fun setFadeInOut(enabled: Boolean) {
+        repository.setFadeInOutEnabled(enabled)
+        _fadeInOut.value = enabled
     }
 
     fun isSongLiked(songId: String): Boolean {

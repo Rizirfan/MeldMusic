@@ -17,9 +17,7 @@ object PlaybackManager {
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var sleepTimerJob: Job? = null
 
-    private val defaultSong = Song("8uTrvb7Jl1w", "Die With A Smile", "Lady Gaga & Bruno Mars", "Single", "https://i.ytimg.com/vi/8uTrvb7Jl1w/hqdefault.jpg", 251)
-
-    private val _currentSong = MutableStateFlow<Song?>(defaultSong)
+    private val _currentSong = MutableStateFlow<Song?>(null)
     val currentSong: StateFlow<Song?> = _currentSong.asStateFlow()
 
     private val _playbackState = MutableStateFlow(PlaybackState.IDLE)
@@ -28,10 +26,10 @@ object PlaybackManager {
     private val _progress = MutableStateFlow(0f)
     val progress: StateFlow<Float> = _progress.asStateFlow()
 
-    private val _duration = MutableStateFlow(251f)
+    private val _duration = MutableStateFlow(0f)
     val duration: StateFlow<Float> = _duration.asStateFlow()
 
-    private val _queue = MutableStateFlow<List<Song>>(listOf(defaultSong))
+    private val _queue = MutableStateFlow<List<Song>>(emptyList())
     val queue: StateFlow<List<Song>> = _queue.asStateFlow()
 
     // --- Advanced Playback States ---
@@ -50,11 +48,17 @@ object PlaybackManager {
     private val _isSleepTimerActive = MutableStateFlow(false)
     val isSleepTimerActive: StateFlow<Boolean> = _isSleepTimerActive.asStateFlow()
 
+    private val _needsInit = MutableStateFlow(false)
+    val needsInit: StateFlow<Boolean> = _needsInit.asStateFlow()
+
     private var currentQueueIndex = 0
     private var player: YouTubePlayer? = null
     
+    // Pending playback: requested while player was not ready
+    private var pendingPlayback: Pair<Song, List<Song>>? = null
+    
     // Tracks current original queue (needed when shuffle is toggled on/off)
-    private var originalQueue: List<Song> = listOf(defaultSong)
+    private var originalQueue: List<Song> = emptyList()
 
     // Volume crossfade tracking
     private var targetVolume = 100
@@ -182,14 +186,23 @@ object PlaybackManager {
         _progress.value = 0f
         _duration.value = song.durationSeconds.toFloat()
 
-        android.util.Log.d("WalkmanSh", "PlaybackManager play: ${song.title}")
-
-        player?.let {
-            it.setVolume(100) // reset volume
-            it.loadVideo(song.id, 0f)
+        if (player != null) {
+            player!!.setVolume(100)
+            player!!.loadVideo(song.id, 0f)
             _playbackState.value = PlaybackState.PLAYING
-        } ?: run {
-            android.util.Log.e("WalkmanSh", "Cannot play: YouTubePlayer is null!")
+        } else {
+            pendingPlayback = song to newQueue
+            _needsInit.value = true
+        }
+    }
+
+    fun onPlayerReady(player: YouTubePlayer) {
+        initializePlayer(player)
+        _needsInit.value = false
+        pendingPlayback?.let { (song, _) ->
+            pendingPlayback = null
+            player.loadVideo(song.id, 0f)
+            _playbackState.value = PlaybackState.PLAYING
         }
     }
 

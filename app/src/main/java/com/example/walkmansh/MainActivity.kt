@@ -1,8 +1,10 @@
 package com.example.walkmansh
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
-
 import android.speech.RecognizerIntent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,22 +17,15 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.background
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.walkmansh.data.DefaultDataRepository
+import com.example.walkmansh.playback.MusicService
 import com.example.walkmansh.playback.PlaybackManager
 import com.example.walkmansh.theme.WalkmanshTheme
 import com.example.walkmansh.ui.components.AppleMusicUi
@@ -43,6 +38,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFram
 
 class MainActivity : ComponentActivity() {
     private var youtubePlayerView: YouTubePlayerView? = null
+    private var playerInitialized = false
     private var onVoiceSearchResult: ((String) -> Unit)? = null
 
     private val speechRecognizerLauncher = registerForActivityResult(
@@ -56,6 +52,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { /* granted or not - we handle gracefully */ }
+
     private fun triggerVoiceSearch() {
         try {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -65,6 +65,33 @@ class MainActivity : ComponentActivity() {
             speechRecognizerLauncher.launch(intent)
         } catch (e: Exception) {
             android.util.Log.e("WalkmanSh", "Voice search launch failed: ${e.message}")
+        }
+    }
+
+    private fun ensurePlayerInit() {
+        if (youtubePlayerView == null) {
+            youtubePlayerView = YouTubePlayerView(this).apply {
+                enableAutomaticInitialization = false
+                enableBackgroundPlayback(true)
+                val decorView = window.decorView as android.view.ViewGroup
+                decorView.addView(this, android.view.ViewGroup.LayoutParams(1, 1))
+            }
+        }
+        if (!playerInitialized) {
+            playerInitialized = true
+            val options = IFramePlayerOptions.Builder(this)
+                .controls(0)
+                .autoplay(1)
+                .origin("https://com.example.walkmansh")
+                .build()
+            youtubePlayerView!!.initialize(
+                object : AbstractYouTubePlayerListener() {
+                    override fun onReady(youTubePlayer: YouTubePlayer) {
+                        PlaybackManager.onPlayerReady(youTubePlayer)
+                    }
+                },
+                options
+            )
         }
     }
 
@@ -84,6 +111,25 @@ class MainActivity : ComponentActivity() {
                 2 -> true
                 else -> androidx.compose.foundation.isSystemInDarkTheme()
             }
+            val needsInit by PlaybackManager.needsInit.collectAsState()
+
+            LaunchedEffect(needsInit) {
+                if (needsInit) {
+                    ensurePlayerInit()
+                }
+            }
+
+            // Defer service + permission request to after first frame
+            LaunchedEffect(Unit) {
+                startService(Intent(this@MainActivity, MusicService::class.java))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
+            }
 
             WalkmanshTheme(darkTheme = isDarkTheme, dynamicColor = false) {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -97,7 +143,6 @@ class MainActivity : ComponentActivity() {
 
                         var isPlayerOpen by remember { mutableStateOf(false) }
 
-                        // Sync Voice Search Result with ViewModel
                         DisposableEffect(Unit) {
                             onVoiceSearchResult = { text ->
                                 viewModel.onSearchQueryChange(text)
@@ -109,14 +154,12 @@ class MainActivity : ComponentActivity() {
                         }
 
                         Box(modifier = Modifier.fillMaxSize()) {
-                            // Main Apple Music styled tabs UI
                             AppleMusicUi(
                                 viewModel = viewModel,
                                 onOpenPlayer = { isPlayerOpen = true },
                                 onTriggerVoiceSearch = { triggerVoiceSearch() }
                             )
 
-                            // Slide up full screen player
                             AnimatedVisibility(
                                 visible = isPlayerOpen,
                                 enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
@@ -126,39 +169,6 @@ class MainActivity : ComponentActivity() {
                                 FullPlayerScreen(
                                     onDismiss = { isPlayerOpen = false },
                                     viewModel = viewModel
-                                )
-                            }
-
-                            // Hidden YouTube Player View (audio-only playback companion)
-                            // Placed last in Z-order, size 1.dp with tiny alpha, enabling background playback to prevent suspension
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .size(1.dp)
-                                    .alpha(0.01f)
-                            ) {
-                                AndroidView(
-                                    factory = { context ->
-                                        android.util.Log.d("WalkmanSh", "YouTubePlayerView factory called")
-                                        val playerView = YouTubePlayerView(context).apply {
-                                            enableAutomaticInitialization = false
-                                            enableBackgroundPlayback(true)
-                                            val options = IFramePlayerOptions.Builder(context)
-                                                .controls(0)
-                                                .autoplay(1)
-                                                .origin("https://com.example.walkmansh")
-                                                .build()
-                                            initialize(object : AbstractYouTubePlayerListener() {
-                                                override fun onReady(youTubePlayer: YouTubePlayer) {
-                                                    android.util.Log.d("WalkmanSh", "YouTubePlayerView onReady called")
-                                                    PlaybackManager.initializePlayer(youTubePlayer)
-                                                }
-                                            }, options)
-                                        }
-                                        this@MainActivity.youtubePlayerView = playerView
-                                        playerView
-                                    },
-                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
                         }
@@ -171,5 +181,8 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         youtubePlayerView?.release()
+        youtubePlayerView?.let {
+            (window.decorView as? android.view.ViewGroup)?.removeView(it)
+        }
     }
 }

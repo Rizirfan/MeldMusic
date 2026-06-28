@@ -102,6 +102,9 @@ dependencies {
   // YouTube Player
   implementation(libs.youtube.player)
 
+  // Media session + notification support
+  implementation(libs.androidx.media)
+
   // Material Icons Extended
   implementation(libs.androidx.compose.material.icons.extended)
 }

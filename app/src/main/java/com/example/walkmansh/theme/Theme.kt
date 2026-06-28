@@ -16,31 +16,37 @@ import android.app.Activity
 import androidx.compose.runtime.SideEffect
 
 private val DarkColorScheme = darkColorScheme(
-    primary = WalkmanDarkPrimary,
-    secondary = WalkmanDarkSecondary,
-    tertiary = WalkmanGray,
-    background = WalkmanDarkBg,
-    surface = WalkmanDarkSurface,
-    onPrimary = WalkmanDarkTextPrimary,
-    onSecondary = WalkmanDarkTextPrimary,
-    onBackground = WalkmanDarkTextPrimary,
-    onSurface = WalkmanDarkTextPrimary,
-    inverseSurface = WalkmanDarkTextPrimary,
-    inverseOnSurface = WalkmanDarkBg
+    primary = MusicAccent,
+    secondary = MusicAccentDark,
+    tertiary = MusicGray,
+    background = DarkBg,
+    surface = DarkSurface,
+    surfaceVariant = DarkSurfaceVariant,
+    onPrimary = DarkOnSurface,
+    onSecondary = DarkOnSurface,
+    onBackground = DarkOnSurface,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    outline = DarkDivider,
+    inverseSurface = DarkOnSurface,
+    inverseOnSurface = DarkBg
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = WalkmanPrimary,
-    secondary = WalkmanSecondary,
-    tertiary = WalkmanGray,
-    background = WalkmanLightBg,
-    surface = WalkmanLightSurface,
-    onPrimary = WalkmanTextPrimary,
-    onSecondary = WalkmanTextPrimary,
-    onBackground = WalkmanTextPrimary,
-    onSurface = WalkmanTextPrimary,
-    inverseSurface = WalkmanTextPrimary,
-    inverseOnSurface = WalkmanLightBg
+    primary = MusicAccent,
+    secondary = MusicAccentDark,
+    tertiary = MusicGray,
+    background = LightBg,
+    surface = LightSurface,
+    surfaceVariant = LightSurfaceVariant,
+    onPrimary = LightOnSurface,
+    onSecondary = LightOnSurface,
+    onBackground = LightOnSurface,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    outline = LightDivider,
+    inverseSurface = LightOnSurface,
+    inverseOnSurface = LightBg
 )
 
 

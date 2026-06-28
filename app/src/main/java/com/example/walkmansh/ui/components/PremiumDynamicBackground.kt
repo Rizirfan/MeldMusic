@@ -83,10 +83,10 @@ fun PremiumDynamicBackground(
     )
 
     // Colors adjusted to align with Walkman Xperia Light and Dark themes
-    val baseBgColor = if (isDark) Color(0xFF0C0E14) else Color(0xFFF3F4F6)
-    val blobColor1 = if (isDark) Color(0xFF3B2F7E) else Color(0xFFE5E2FF) // Soft premium purple
-    val blobColor2 = if (isDark) Color(0xFF134C4E) else Color(0xFFDDF9F8) // Soft premium teal
-    val blobColor3 = if (isDark) Color(0xFF5E1B46) else Color(0xFFFDE4E6) // Soft premium pink
+    val baseBgColor = if (isDark) Color.Black else Color.White
+    val blobColor1 = Color.Transparent
+    val blobColor2 = Color.Transparent
+    val blobColor3 = Color.Transparent
 
     // Cache color list allocations to prevent garbage collection overhead during drawing
     val colors1 = remember(blobColor1) { listOf(blobColor1, Color.Transparent) }

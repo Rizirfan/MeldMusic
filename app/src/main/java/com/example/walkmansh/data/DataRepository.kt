@@ -52,6 +52,10 @@ interface DataRepository {
     fun setOfflineModeEnabled(enabled: Boolean)
     fun getThemeMode(): Int // 0: System, 1: Light, 2: Dark
     fun setThemeMode(mode: Int)
+    fun getSongQuality(): Int // 0: Auto, 1: High, 2: Medium, 3: Low
+    fun setSongQuality(quality: Int)
+    fun isFadeInOutEnabled(): Boolean
+    fun setFadeInOutEnabled(enabled: Boolean)
 }
 
 class DefaultDataRepository(private val context: Context) : DataRepository {
@@ -339,5 +343,21 @@ class DefaultDataRepository(private val context: Context) : DataRepository {
 
     override fun setThemeMode(mode: Int) {
         prefs.edit().putInt("theme_mode", mode).apply()
+    }
+
+    override fun getSongQuality(): Int {
+        return prefs.getInt("song_quality", 0)
+    }
+
+    override fun setSongQuality(quality: Int) {
+        prefs.edit().putInt("song_quality", quality).apply()
+    }
+
+    override fun isFadeInOutEnabled(): Boolean {
+        return prefs.getBoolean("fade_in_out", false)
+    }
+
+    override fun setFadeInOutEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean("fade_in_out", enabled).apply()
     }
 }
