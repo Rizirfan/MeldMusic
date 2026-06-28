@@ -4,6 +4,7 @@
 [![Platform](https://img.shields.io/badge/Platform-Desktop-blue.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+[![Website](https://img.shields.io/badge/Website-rizirfan.github.io/MeldMusic-ff2d55?style=flat-square)](https://rizirfan.github.io/MeldMusic)
 [![Download APK](https://img.shields.io/badge/Android-Download-brightgreen?style=for-the-badge&logo=android&logoColor=white)](https://raw.githubusercontent.com/Rizirfan/MeldMusic/main/MeldMusic.apk)
 
 [![Security](https://img.shields.io/badge/Security-Passing-brightgreen?style=flat-square)](https://github.com/Rizirfan/MeldMusic/security)
