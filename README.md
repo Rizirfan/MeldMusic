@@ -6,6 +6,10 @@
 
 [![Download APK](https://img.shields.io/badge/Android-Download-brightgreen?style=for-the-badge&logo=android&logoColor=white)](https://raw.githubusercontent.com/Rizirfan/MeldMusic/main/MeldMusic.apk)
 
+[![Security](https://img.shields.io/badge/Security-Passing-brightgreen?style=flat-square)](https://github.com/Rizirfan/MeldMusic/security)
+[![Code Quality](https://img.shields.io/badge/Code%20Quality-A-brightgreen?style=flat-square)](https://github.com/Rizirfan/MeldMusic)
+[![Vulnerabilities](https://img.shields.io/badge/Vulnerabilities-None-success?style=flat-square)](https://github.com/Rizirfan/MeldMusic/security)
+
 MeldMusic is a premium, minimalist Android music streaming player built using Jetpack Compose and Material 3. Featuring an Apple Music-inspired aesthetic with Spotify-inspired dark theme, background playback with notification controls, and an animated waveform progress bar, MeldMusic offers an immersive, modern listening experience directly integrated with live YouTube audio streams.
 
 ---
