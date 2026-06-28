@@ -17,9 +17,14 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.core.content.ContextCompat
@@ -37,8 +42,6 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 
 class MainActivity : ComponentActivity() {
-    private var youtubePlayerView: YouTubePlayerView? = null
-    private var playerInitialized = false
     private var onVoiceSearchResult: ((String) -> Unit)? = null
 
     private val speechRecognizerLauncher = registerForActivityResult(
@@ -68,33 +71,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun ensurePlayerInit() {
-        if (youtubePlayerView == null) {
-            youtubePlayerView = YouTubePlayerView(this).apply {
-                enableAutomaticInitialization = false
-                enableBackgroundPlayback(true)
-                val decorView = window.decorView as android.view.ViewGroup
-                decorView.addView(this, android.view.ViewGroup.LayoutParams(1, 1))
-            }
-        }
-        if (!playerInitialized) {
-            playerInitialized = true
-            val options = IFramePlayerOptions.Builder(this)
-                .controls(0)
-                .autoplay(1)
-                .origin("https://com.example.walkmansh")
-                .build()
-            youtubePlayerView!!.initialize(
-                object : AbstractYouTubePlayerListener() {
-                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                        PlaybackManager.onPlayerReady(youTubePlayer)
-                    }
-                },
-                options
-            )
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -111,14 +87,6 @@ class MainActivity : ComponentActivity() {
                 2 -> true
                 else -> androidx.compose.foundation.isSystemInDarkTheme()
             }
-            val needsInit by PlaybackManager.needsInit.collectAsState()
-
-            LaunchedEffect(needsInit) {
-                if (needsInit) {
-                    ensurePlayerInit()
-                }
-            }
-
             // Defer service + permission request to after first frame
             LaunchedEffect(Unit) {
                 startService(Intent(this@MainActivity, MusicService::class.java))
@@ -171,18 +139,38 @@ class MainActivity : ComponentActivity() {
                                     viewModel = viewModel
                                 )
                             }
+
+                            // YouTube player container — lightweight hidden view
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(1.dp)
+                                    .alpha(0.01f)
+                            ) {
+                                AndroidView(
+                                    factory = { context ->
+                                        YouTubePlayerView(context).apply {
+                                            enableAutomaticInitialization = false
+                                            enableBackgroundPlayback(true)
+                                            initialize(
+                                                object : AbstractYouTubePlayerListener() {
+                                                    override fun onReady(youTubePlayer: YouTubePlayer) {
+                                                        PlaybackManager.onPlayerReady(youTubePlayer)
+                                                    }
+                                                },
+                                                IFramePlayerOptions.Builder(this@MainActivity)
+                                                    .controls(0)
+                                                    .build()
+                                            )
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        youtubePlayerView?.release()
-        youtubePlayerView?.let {
-            (window.decorView as? android.view.ViewGroup)?.removeView(it)
         }
     }
 }

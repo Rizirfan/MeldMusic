@@ -59,6 +59,7 @@ fun AppleMusicUi(
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     var activePlaylist by remember { mutableStateOf<Playlist?>(null) }
+    var showLikedSongs by remember { mutableStateOf(false) }
     var showSettingsDialog by remember { mutableStateOf(false) }
 
     val currentSong by PlaybackManager.currentSong.collectAsState()
@@ -115,6 +116,11 @@ fun AppleMusicUi(
                             activePlaylist = null
                         }
                     )
+                } else if (showLikedSongs) {
+                    LikedSongsScreen(
+                        viewModel = viewModel,
+                        onBack = { showLikedSongs = false }
+                    )
                 } else {
                     when (selectedTab) {
                         0 -> HomeTab(
@@ -125,7 +131,8 @@ fun AppleMusicUi(
                         1 -> SearchTab(viewModel, onTriggerVoiceSearch)
                         2 -> LibraryTab(
                             viewModel = viewModel,
-                            onPlaylistSelect = { activePlaylist = it }
+                            onPlaylistSelect = { activePlaylist = it },
+                            onLikedSongsClick = { showLikedSongs = true }
                         )
                     }
                 }
@@ -604,7 +611,8 @@ fun SearchTab(
 @Composable
 fun LibraryTab(
     viewModel: WalkmanShViewModel,
-    onPlaylistSelect: (Playlist) -> Unit
+    onPlaylistSelect: (Playlist) -> Unit,
+    onLikedSongsClick: () -> Unit = {}
 ) {
     val likedSongs by viewModel.likedSongs.collectAsState()
     val customPlaylists by viewModel.customPlaylists.collectAsState()
@@ -633,7 +641,7 @@ fun LibraryTab(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { /* navigate to liked songs */ }
+                    .clickable { onLikedSongsClick() }
                     .padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -1078,6 +1086,152 @@ fun PlaylistDetailScreen(
 
         items(playlist.songs) { song ->
             SongListItem(song = song, onClick = { onPlaySong(song) })
+        }
+    }
+}
+
+@Composable
+fun LikedSongsScreen(
+    viewModel: WalkmanShViewModel,
+    onBack: () -> Unit
+) {
+    val likedSongs by viewModel.likedSongs.collectAsState()
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val onSurface = MaterialTheme.colorScheme.onSurface
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val surfaceColor = MaterialTheme.colorScheme.surfaceVariant
+    val errorColor = MaterialTheme.colorScheme.error
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(bottom = 80.dp)
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            Surface(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable { onBack() },
+                shape = CircleShape,
+                color = surfaceColor.copy(alpha = 0.5f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_back),
+                        contentDescription = null,
+                        tint = onSurface
+                    )
+                }
+            }
+        }
+
+        item {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Surface(
+                    modifier = Modifier.size(80.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = primaryColor.copy(alpha = 0.15f)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_favorite),
+                            contentDescription = null,
+                            tint = primaryColor,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Liked Songs", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = onSurface)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    "${likedSongs.size} songs",
+                    fontSize = 12.sp,
+                    color = onSurfaceVariant
+                )
+            }
+        }
+
+        if (likedSongs.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "No liked songs yet",
+                        fontSize = 14.sp,
+                        color = onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.addSongToHistory(likedSongs[0])
+                            PlaybackManager.play(likedSongs[0], likedSongs)
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(painterResource(R.drawable.ic_play_arrow), contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Play")
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            val shuffled = likedSongs.shuffled()
+                            viewModel.addSongToHistory(shuffled[0])
+                            PlaybackManager.play(shuffled[0], likedSongs)
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(painterResource(R.drawable.ic_shuffle), contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Shuffle")
+                    }
+                }
+            }
+
+            items(likedSongs) { song ->
+                SongListItem(
+                    song = song,
+                    onClick = {
+                        viewModel.addSongToHistory(song)
+                        PlaybackManager.play(song, likedSongs)
+                    },
+                    trailingContent = {
+                        IconButton(
+                            onClick = { viewModel.toggleLike(song) },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_favorite),
+                                contentDescription = "Unlike",
+                                tint = errorColor,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+                )
+            }
         }
     }
 }
