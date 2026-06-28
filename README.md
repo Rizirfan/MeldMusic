@@ -4,33 +4,33 @@
 [![Platform](https://img.shields.io/badge/Platform-Desktop-blue.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-[Download APK](https://github.com/Rizirfan/MeldMusic/blob/main/app-debug.apk?raw=true) or [Direct Download](https://raw.githubusercontent.com/Rizirfan/MeldMusic/main/app-debug.apk)
+[Download v1.0 APK](https://github.com/Rizirfan/MeldMusic/blob/main/app-debug.apk?raw=true) or [Direct Download](https://raw.githubusercontent.com/Rizirfan/MeldMusic/main/app-debug.apk)
 
-MeldMusic is a premium, minimalist Android music streaming player built using Jetpack Compose and Material 3. Featuring Xperia-inspired aesthetics, a smooth glassmorphic interface, and a dynamic drifting liquid blobs background, MeldMusic offers an immersive, modern listening experience directly integrated with live YouTube audio streams.
+MeldMusic is a premium, minimalist Android music streaming player built using Jetpack Compose and Material 3. Featuring an Apple Music-inspired aesthetic with Spotify-inspired dark theme, background playback with notification controls, and an animated waveform progress bar, MeldMusic offers an immersive, modern listening experience directly integrated with live YouTube audio streams.
 
 ---
 
 ## Features
 
-### Premium Visual Aesthetics
-* **Dynamic Blobs Background**: Overlapping colorful liquid blobs (glowing purple, teal, and pink gradients) drift organic-like across the screen. Backed by a hardware-accelerated heavy blur (Modifier.blur), they create a gorgeous floating atmosphere.
-* **Glassmorphic UI**: Floating bottom navigation bar, card components, panels, search bars, and the sliding MiniPlayer are styled as semi-transparent glass sheets (alpha values between 0.4f and 0.6f with subtle translucent borders).
-* **Top Bar Theme Integration**: Automatic theme-dependent status bar and navigation bar icon color adjustments (light icons in dark mode, dark icons in light mode) for perfect readability.
-* **Quick Theme Toggle**: Instantly switch between Light and Dark themes via a one-tap header switch button.
+### Apple Music-Inspired UI
+* **3-Tab Navigation**: Home, Search, and Library tabs with floating bottom navigation bar.
+* **MiniPlayer**: Persistent mini player with album art, playback controls, and progress bar — shows gradient colors extracted from the album art.
+* **Full Player Screen**: Swipe-to-dismiss player with animated waveform progress bar, album art pulse animation, queue panel, sleep timer, and add-to-playlist dialog.
 
-### Premium Controls & Navigation
-* **2-Tab Floating Navigation**: Simplified, floating bottom navigation containing only Player and Search tabs.
-* **Compact Player Deck**: Play, pause, skip, scrub tracks, and toggle shuffle/repeat directly from the home screen compact player.
-* **Playlists Management**: 
-  * View default curated playlists (Chill Lofi, Essential Pop, Electronic Focus, Workout, etc.) alongside your own custom playlists.
-  * Add songs to playlists on-the-fly via a modern picker dialog.
-  * Delete custom playlists and remove songs from your Liked list directly with inline trash actions.
-* **Sleep Timer**: Schedule music termination (5, 15, 30, 60 minutes) to sleep peacefully.
-* **Queue Panel**: Full overview of upcoming songs with simple track re-ordering and removal.
+### Background Playback
+* **Foreground Service**: MediaSession integration with lock screen controls, audio focus handling, and notification with album art.
+* **Notification Controls**: Play/Pause, Next, Previous, and stop actions directly from the notification.
 
-### Live Companion Audio
-* **YouTube Streaming**: Live search and streaming powered by official YouTube audio streams.
-* **Background Playback**: Employs a low-footprint, audio-only background companion playback engine to prevent system suspension and let your music play while screen-off.
+### Playlists & Library
+* **Custom Playlists**: Create, play, and delete your own playlists.
+* **Liked Songs**: Save favorite songs with one tap.
+* **Search History & Recently Played**: Automatic tracking for quick access.
+
+### Settings
+* **Theme**: System, Light, or Dark mode with pure white / pure black backgrounds.
+* **Song Quality**: Auto, High, Medium, or Low streaming quality.
+* **Fade In/Out**: Crossfade between songs toggle.
+* **Voice Search**: Search music using voice recognition.
 
 ---
 
@@ -41,16 +41,11 @@ MeldMusic/
 ├── app/                  # Android Mobile Module
 │   ├── src/main/
 │   │   ├── java/com/example/walkmansh/
-│   │   │   ├── data/     # Song model & Catalog Provider
-│   │   │   ├── playback/ # Playback Manager
-│   │   │   └── ui/       # Compose layouts (AppleMusicUi, PremiumDynamicBackground)
-│   │   └── res/          # Drawables (app_logo) & styles
-├── desktop/              # Electron Desktop Module
-│   ├── index.html        # App layout and structure
-│   ├── style.css         # Glassmorphic themes & background drift animations
-│   ├── app.js            # Playback controller, search, storage persistence
-│   ├── main.js           # Electron main process (frameless window config)
-│   └── package.json      # Node packaging & dependencies
+│   │   │   ├── data/     # Song model, DataRepository, API client
+│   │   │   ├── playback/ # PlaybackManager & MusicService (foreground service)
+│   │   │   ├── theme/    # Color, Type, Theme (Apple Music/Spotify palette)
+│   │   │   └── ui/       # Compose screens (AppleMusicUi, FullPlayerScreen, etc.)
+│   │   └── res/          # Drawables (vector icons, app_logo, splash)
 └── settings.gradle.kts
 ```
 
@@ -59,7 +54,7 @@ MeldMusic/
 ## Setup & Installation
 
 ### Android Mobile App
-1. Prerequisites: Android SDK 34 (Target SDK), physical device or emulator running API 21+.
+1. Prerequisites: Android SDK 36 (Target SDK), physical device or emulator running API 24+.
 2. Build the project using Gradle:
    ```bash
    ./gradlew assembleDebug
@@ -67,21 +62,6 @@ MeldMusic/
 3. Deploy to your connected device:
    ```bash
    adb install app/build/outputs/apk/debug/app-debug.apk
-   ```
-
-### Desktop Application (Windows, macOS, Linux)
-1. Prerequisites: Node.js (v18+) and npm installed.
-2. Navigate to the `desktop` directory:
-   ```bash
-   cd desktop
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Run the desktop application:
-   ```bash
-   npm start
    ```
 
 ---
